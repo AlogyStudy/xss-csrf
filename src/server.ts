@@ -5,6 +5,7 @@ import express from 'express'
 import path from 'path'
 import bodyParser from 'body-parser'
 import cookieParser from 'cookie-parser'
+import svgCaptcha from 'svg-captcha'
 
 const app = express()
 
@@ -16,11 +17,12 @@ app.use(cookieParser())
 interface IUser {
   username: string
   password: string
+  money: number
 }
 
 let userList: Array<IUser> = [
-  { username: 'tpack', password: 'tpack' },
-  { username: 'alogy', password: '123123' }
+  { username: 'tpack', password: 'tpack', money: 10000 },
+  { username: 'alogy', password: '123123', money: 200 }
 ]
 const SESSION_ID: string = 'connect.sid'
 let session: {[key: string]: Object} = {}
@@ -58,10 +60,46 @@ app.get('/api/list', (req, res) => {
 app.post('/api/addcomment', (req, res) => {
   // 验证登录信息
   let ret: any = session[req.cookies[SESSION_ID]] || {}
-  let user = ret.username
+  let user = ret.user
   if (user) {
     comments.push({ username: user.username, content: req.body.content })
     res.json({code: 0})
+  } else {
+    res.json({code: 1, error: '用户未登陆'})
+  }
+})
+
+app.get('/api/userinfo', (req, res) => {
+  // 验证登录信息
+  let ret: any = session[req.cookies[SESSION_ID]] || {}
+  // data, svg内容，text表示验证码对应结果
+  let {data, text} = svgCaptcha.create()
+  ret.text = text
+  let user = ret.user
+  if (user) {
+    res.json({code: 0, username: user.username, money: user.money, svg: data})
+  } else {
+    res.json({code: 1, error: '用户未登陆'})
+  }
+})
+
+app.post('/api/transfer', (req, res) => {
+  let ret: any = session[req.cookies[SESSION_ID]] || {}
+  let user = ret.user
+  if (user) {
+    let { target, money, code } = req.body
+    if (user.text === code) {
+      userList.forEach(u => {
+        if (u.username === user.username) {
+          u.money -= +money
+        }
+        if (u.username === target) {
+          u.money += +money
+        }
+      })
+      res.json({code: 0})
+    }
+    res.json({code: 1, error: '非'})
   } else {
     res.json({code: 1, error: '用户未登陆'})
   }

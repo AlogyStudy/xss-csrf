@@ -54,5 +54,13 @@ function encodeHtml (str) {
 }
 ```
 
+获取api的接口漏洞，从抓包，返回参数，接口参数等信息分析。
 
+## csrf
 
+跨站请求伪造，钓鱼网站
+
+防御：
+- 添加验证码（体验不好）
+- 判断来源 referer
+- token

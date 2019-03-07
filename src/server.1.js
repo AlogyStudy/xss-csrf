@@ -8,7 +8,6 @@ var express_1 = __importDefault(require("express"));
 var path_1 = __importDefault(require("path"));
 var body_parser_1 = __importDefault(require("body-parser"));
 var cookie_parser_1 = __importDefault(require("cookie-parser"));
-var svg_captcha_1 = __importDefault(require("svg-captcha"));
 var app = express_1.default();
 app.use(express_1.default.static(path_1.default.join(__dirname, 'public')));
 app.use(express_1.default.static(path_1.default.join(__dirname, '../')));
@@ -63,12 +62,9 @@ app.post('/api/addcomment', function (req, res) {
 app.get('/api/userinfo', function (req, res) {
     // 验证登录信息
     var ret = session[req.cookies[SESSION_ID]] || {};
-    // data, svg内容，text表示验证码对应结果
-    var _a = svg_captcha_1.default.create(), data = _a.data, text = _a.text;
-    ret.text = text;
     var user = ret.user;
     if (user) {
-        res.json({ code: 0, username: user.username, money: user.money, svg: data });
+        res.json({ code: 0, username: user.username, money: user.money });
     }
     else {
         res.json({ code: 1, error: '用户未登陆' });
@@ -78,22 +74,21 @@ app.post('/api/transfer', function (req, res) {
     var ret = session[req.cookies[SESSION_ID]] || {};
     var user = ret.user;
     if (user) {
-        var _a = req.body, target_1 = _a.target, money_1 = _a.money, code = _a.code;
-        if (user.text === code) {
-            userList.forEach(function (u) {
-                if (u.username === user.username) {
-                    u.money -= +money_1;
-                }
-                if (u.username === target_1) {
-                    u.money += +money_1;
-                }
-            });
-            res.json({ code: 0 });
-        }
-        res.json({ code: 1, error: '非' });
+        var _a = req.body, target_1 = _a.target, money_1 = _a.money;
+        console.log(req.body, 'req.body');
+        userList.forEach(function (u) {
+            console.log(u, 'u');
+            if (u.username === user.username) {
+                u.money -= +money_1;
+            }
+            if (u.username === target_1) {
+                u.money += +money_1;
+            }
+        });
+        res.json({ code: 0 });
     }
     else {
         res.json({ code: 1, error: '用户未登陆' });
     }
 });
-app.listen(1230);
+app.listen(1231);
