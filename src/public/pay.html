@@ -66,12 +66,14 @@
         let target = $('#target').val()
         let money = $('#money').val()
         let code = $('#code').val()
+        let token = document.cookie.match(/connect.sid=([^;]*)/) || []
 
-        $.post('/api/transfer', {target, money, code}).then(res => {
+        $.post('/api/transfer', {target, money, code, token: 't_' + token}).then(res => {
+            debugger
             if (res.code === 0) {
-                getUserInfo()
+              getUserInfo()
             } else {
-                location.href = '/login.html'
+              location.href = '/login.html'
             }
         })
     }

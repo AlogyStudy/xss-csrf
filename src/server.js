@@ -76,10 +76,18 @@ app.get('/api/userinfo', function (req, res) {
 });
 app.post('/api/transfer', function (req, res) {
     var ret = session[req.cookies[SESSION_ID]] || {};
+    var referer = req.headers['referer'] || ''; // 可以伪造头
+    if (!referer.includes('http://localhost:1230')) {
+        res.json({ code: 1, error: '非' });
+    }
     var user = ret.user;
     if (user) {
-        var _a = req.body, target_1 = _a.target, money_1 = _a.money, code = _a.code;
-        if (user.text === code) {
+        var _a = req.body, target_1 = _a.target, money_1 = _a.money, code = _a.code, token = _a.token;
+        // 验证token
+        if ("t_req.cookies[SESSION_ID]" !== token) {
+            res.json({ code: 1, error: 'token不正确' });
+        }
+        if (code && ret.text.toLocaleUpperCase() === code.toLocaleUpperCase()) {
             userList.forEach(function (u) {
                 if (u.username === user.username) {
                     u.money -= +money_1;
@@ -90,7 +98,7 @@ app.post('/api/transfer', function (req, res) {
             });
             res.json({ code: 0 });
         }
-        res.json({ code: 1, error: '非' });
+        res.json({ code: 1, error: '验证码不正确' });
     }
     else {
         res.json({ code: 1, error: '用户未登陆' });

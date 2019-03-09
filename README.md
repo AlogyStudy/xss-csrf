@@ -62,5 +62,18 @@ function encodeHtml (str) {
 
 防御：
 - 添加验证码（体验不好）
-- 判断来源 referer
-- token
+- 判断来源 referer(可以伪造，不靠谱)
+- token, 前后台约定规则生成token
+
+## xsrf
+
+`xss` + `csrf` = `xsrf`
+
+解决方法：过滤，过滤特殊字符。
+
+注入第三方写好脚本
+
+
+-----
+
+[前端攻击](https://segmentfault.com/a/1190000011862576#articleHeader1)

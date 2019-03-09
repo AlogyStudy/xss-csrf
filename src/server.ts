@@ -85,10 +85,18 @@ app.get('/api/userinfo', (req, res) => {
 
 app.post('/api/transfer', (req, res) => {
   let ret: any = session[req.cookies[SESSION_ID]] || {}
+  let referer = req.headers['referer'] || '' // 可以伪造头
+  if (!referer.includes('http://localhost:1230')) {
+    res.json({code: 1, error: '非'})
+  }
   let user = ret.user
   if (user) {
-    let { target, money, code } = req.body
-    if (user.text === code) {
+    let { target, money, code, token } = req.body
+    // 验证token
+    if (`t_req.cookies[SESSION_ID]` !== token) {
+      res.json({code: 1, error: 'token不正确'})
+    }
+    if (code && ret.text.toLocaleUpperCase() === code.toLocaleUpperCase()) {
       userList.forEach(u => {
         if (u.username === user.username) {
           u.money -= +money
@@ -99,7 +107,7 @@ app.post('/api/transfer', (req, res) => {
       })
       res.json({code: 0})
     }
-    res.json({code: 1, error: '非'})
+    res.json({code: 1, error: '验证码不正确'})
   } else {
     res.json({code: 1, error: '用户未登陆'})
   }

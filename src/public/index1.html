@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+      #web {
+        border: 1px solid cyan
+      }
+    </style>
+</head>
+<body>
+
+  <input type="text" id="web">
+  <button id="add">生成图片</button>
+  <div class="box"></div>
+  <script src="/node_modules/jquery/dist/jquery.js"></script>
+
+  <script>
+    // 不基于后端 DOM-Based, `修改属性`, `插入内容`, `document.write`
+    // 改变结构，会造成攻击。
+    // 攻击的内容称之为：XSS payload
+    // 解决方法：转译
+    // <img src="xxx" onerror="alert(123)" id="" />
+    // xxx" onerror="alert(123)" id="
+
+    // <img src=""><script>alert(123)<\/script>"" \/>
+    // "><script>alert(123)<\/script>"
+
+    $('#add').on('click', () => {
+      $('.box').html(`<img src="${encodeURI($('#web').val())}" />`)
+    })
+  </script>
+    
+</body>
+</html>
